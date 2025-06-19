@@ -1,6 +1,201 @@
-<div id="score">0</div>
-<div id="timer">10</div>
-<button id="start">Start Game</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Whack-a-Mole</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 30px;
+    }
 
-<div class="hole"><div class="mole"></div></div>
-<div class="hole"><div class="mole"></div></div>
+    #score, #timer {
+      font-size: 2rem;
+      margin: 10px;
+    }
+
+    #start {
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+    }
+
+    .game {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 340px;
+      margin: auto;
+    }
+
+    .hole {
+      width: 100px;
+      height: 100px;
+      background: #ddd;
+      border: 2px solid #aaa;
+      margin: 5px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    .mole {
+      width: 80px;
+      height: 80px;
+      background: brown;
+      border-radius: 50%;
+      position: absolute;
+      bottom: -100%;
+      left: 10px;
+      transition: bottom 0.3s ease;
+      cursor: pointer;
+    }
+
+    .hole.show .mole {
+      bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Whack-a-Mole</h1>
+  <div>
+    <button id="start">Start Game</button>
+  </div>
+  <div>
+    <span>Score: <span id="score">0</span></span>
+    <span style="margin-left: 20px;">Time: <span id="timer">10</span></span>
+  </div>
+
+  <div class="game">
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+  </div>
+
+  <script>
+    const holes = document.querySelectorAll('.hole');
+    const moles = document.querySelectorAll('.mole');
+    const startButton = document.querySelector('#start');
+    const score = document.querySelector('#score');
+    const timerDisplay = document.querySelector('#timer');
+
+    let time = 0;
+    let timer;
+    let lastHole = null;
+    let points = 0;
+    let difficulty = "hard";
+
+    function randomInteger(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function setDelay(difficulty) {
+      if (difficulty === "easy") {
+        return 1500;
+      } else if (difficulty === "normal") {
+        return 1000;
+      } else {
+        return randomInteger(600, 1200);
+      }
+    }
+
+    function chooseHole(holes) {
+      const index = randomInteger(0, holes.length - 1);
+      const hole = holes[index];
+      if (hole === lastHole) {
+        return chooseHole(holes);
+      } else {
+        lastHole = hole;
+        return hole;
+      }
+    }
+
+    function gameOver() {
+      if (time > 0) {
+        return showUp();
+      } else {
+        stopGame();
+        return "game stopped";
+      }
+    }
+
+    function showUp() {
+      const delay = setDelay(difficulty);
+      const hole = chooseHole(holes);
+      return showAndHide(hole, delay);
+    }
+
+    function showAndHide(hole, delay) {
+      toggleVisibility(hole);
+      const timeoutID = setTimeout(() => {
+        toggleVisibility(hole);
+        gameOver();
+      }, delay);
+      return timeoutID;
+    }
+
+    function toggleVisibility(hole) {
+      hole.classList.toggle('show');
+    }
+
+    function updateScore() {
+      points++;
+      score.textContent = points;
+    }
+
+    function clearScore() {
+      points = 0;
+      score.textContent = points;
+    }
+
+    function updateTimer() {
+      time--;
+      timerDisplay.textContent = time;
+      if (time <= 0) {
+        clearInterval(timer);
+      }
+    }
+
+    function startTimer() {
+      timerDisplay.textContent = time;
+      timer = setInterval(updateTimer, 1000);
+    }
+
+    function whack(event) {
+      updateScore();
+      event.target.classList.remove('show');
+    }
+
+    function setEventListeners() {
+      moles.forEach(mole => mole.addEventListener('click', whack));
+    }
+
+    function setDuration(duration) {
+      time = duration;
+    }
+
+    function stopGame() {
+      clearInterval(timer);
+    }
+
+    function startGame() {
+      clearScore();
+      setDuration(10); // Set game duration here
+      setEventListeners();
+      startTimer();
+      showUp();
+    }
+
+    startButton.addEventListener('click', startGame);
+  </script>
+
+</body>
+</html>
