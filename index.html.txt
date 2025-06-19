@@ -1,0 +1,6 @@
+<div id="score">0</div>
+<div id="timer">10</div>
+<button id="start">Start Game</button>
+
+<div class="hole"><div class="mole"></div></div>
+<div class="hole"><div class="mole"></div></div>

@@ -1,0 +1,23 @@
+.hole {
+  width: 100px;
+  height: 100px;
+  background: #ccc;
+  margin: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+.mole {
+  width: 80px;
+  height: 80px;
+  background: brown;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -100%;
+  left: 10px;
+  transition: bottom 0.3s;
+}
+
+.hole.show .mole {
+  bottom: 10px;
+}
